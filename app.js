@@ -1,30 +1,122 @@
 #!/usr/bin/env node
 
 const program = require("commander");
+const git = require("simple-git");
+const util = require("util");
+const exec = util.promisify(require("child_process").exec);
+const { prompt, Separator } = require("inquirer");
 
-const { prompt } = require("inquirer");
+const envMap = {
+  TEST: "test:build",
+  DEVELOP: "dev:build",
+  PRODUCTION: "prod"
+};
 
-const questions = [
+const envPrompt = [
   {
     type: "list",
-    name: "env",
-    message: "Select Environment",
-    choices: ["PROD", "TEST"],
-    default: 1
-  },
-  { type: "input", name: "branch", message: "Enter Git Branch" },
-  { type: "input", name: "name", message: "Enter Name" }
+    name: "selectedEnv",
+    message: "Choose Environment to deploy",
+    choices: [
+      { name: "TEST", script: "test:build" },
+      { name: "DEVELOP", script: "dev:build" },
+      { name: "PRODUCTION", script: "prod" }
+    ],
+    validate: function(answer) {
+      if (answer.length < 1) {
+        return "You must choose at least one topping.";
+      }
+      return true;
+    }
+  }
 ];
 
-program.version("0.0.1").description("Agrostar UI deployment CLI");
+const confirmPrompt = [
+  {
+    type: "confirm",
+    name: "deploy",
+    message: "Do you wanto deploy it to remote server?"
+  }
+];
 
-program
-  .command("agdeploy1")
-  .alias("basav")
-  .action(() => {
-    prompt(questions).then(answers =>
-      console.log("Env is %s and Branch is %s", answers.env, answers.branch)
-    );
+function checkoutBranch(branch) {
+  git()
+    .checkout(branch)
+    .exec((err, data) => {
+      if (!err) {
+        console.log("checkout succesfully");
+        selectEnvironment();
+      } else console.log("it failed", err);
+    });
+}
+
+function selectEnvironment() {
+  prompt(envPrompt).then(function(answers) {
+    runBuildProcess(answers.selectedEnv);
   });
+}
 
-program.parse(process.argv);
+function runBuildProcess(selectedEnv) {
+  exec("npm run " + envMap[selectedEnv]).then(({ stdout, stderr }) => {
+    //after dist folder is made deploying the code
+    prompt(confirmPrompt).then(answers => {
+      if (answers.deploy) {
+        exec("scp -r  dist/ root@agroextest.agrostar.in:~/lmd-ui-v2").then(
+          ({ stdout, stderr }) => {
+            console.log("successfully deployed to remote server");
+          },
+          error => {
+            throw error;
+          }
+        );
+      } else {
+        console.log("exiting cli without deployment");
+        return 0;
+      }
+    });
+  });
+}
+
+function deploy(choices) {
+  prompt([
+    {
+      type: "list",
+      name: "selectedBranch",
+      message: "Choose branch to checkout to",
+      choices: choices
+    },
+    {
+      type: "confirm",
+      name: "askAgain",
+      message: "Want to checkout to another branch?",
+      default: true
+    }
+  ]).then(answers => {
+    if (answers.askAgain) {
+      deploy();
+    } else {
+      // checkout to the selected branch
+      //not handling stash and commit cases now (will do later)
+      checkoutBranch(answers.selectedBranch);
+    }
+  });
+}
+
+function init() {
+  git().branchLocal((err, data) => {
+    if (!err) {
+      var list = data.all;
+
+      program.version("0.0.1").description("Agrostar UI deployment CLI");
+      program
+        .command("agdeploy")
+        .alias("deploy")
+        .action(() => {
+          deploy(list);
+        });
+      program.parse(process.argv);
+    }
+  });
+}
+
+init();
