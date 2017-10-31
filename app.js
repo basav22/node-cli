@@ -61,14 +61,56 @@ function runBuildProcess(selectedEnv) {
     //after dist folder is made deploying the code
     prompt(confirmPrompt).then(answers => {
       if (answers.deploy) {
-        exec("scp -r  dist/ root@agroextest.agrostar.in:~/lmd-ui-v2").then(
-          ({ stdout, stderr }) => {
-            console.log("successfully deployed to remote server");
+        prompt([
+          {
+            type: "input",
+            name: "username",
+            message: "Enter username"
           },
-          error => {
-            throw error;
+          {
+            type: "input",
+            name: "password",
+            message: "Enter password"
+          },
+          {
+            type: "input",
+            name: "fromDeployFolder",
+            message: "Enter folder to deploy from"
+          },
+          {
+            type: "input",
+            name: "toDeployFolder",
+            message: "Enter the folder to deploy to"
+          },
+          {
+            type: "input",
+            name: "remoteServer",
+            message: "Enter the remote server address"
           }
-        );
+        ]).then(answer => {
+          exec(
+            "scp -r " +
+              answer.fromDeployFolder +
+              "/ " +
+              answer.username +
+              "@" +
+              answer.remoteServer +
+              ":~" +
+              "/" +
+              answer.toDeployFolder
+          ).then(
+            ({ stdout, stderr }) => {
+              console.log(
+                stdout,
+                stderr,
+                "successfully deployed to remote server"
+              );
+            },
+            error => {
+              throw error;
+            }
+          );
+        });
       } else {
         console.log("exiting cli without deployment");
         return 0;
