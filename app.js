@@ -88,17 +88,11 @@ function runBuildProcess(selectedEnv) {
             message: "Enter the remote server address"
           }
         ]).then(answer => {
-          exec(
-            "scp -r " +
-              answer.fromDeployFolder +
-              "/ " +
-              answer.username +
-              "@" +
-              answer.remoteServer +
-              ":~" +
-              "/" +
-              answer.toDeployFolder
-          ).then(
+          let scpCommand = answer.password.length
+            ? `scp -r ${answer.fromDeployFolder}/ ${answer.username}:${answer.password}@${answer.remoteServer}:~/${answer.toDeployFolder}`
+            : `scp -r ${answer.fromDeployFolder}/ ${answer.username}@${answer.remoteServer}:~/${answer.toDeployFolder}`;
+            
+          exec(scpCommand).then(
             ({ stdout, stderr }) => {
               console.log(
                 stdout,
