@@ -6,12 +6,21 @@ const { prompt, Separator } = require("inquirer");
 const chalk = require("chalk");
 const gitUtils = require("./gitutils");
 
-const log = console.log;
+// const agdeployJson = require("./agdeploy.json");
+const configHelper = require("./configHelper");
+
+const logger = require("./logger");
+const build = require("./build");
+const deploy = require("./deploy");
+
 /**
  * Global variable go here
  */
 let branches = []; // Local git branches
 
+/**
+ * Init Block
+ */
 initialiseGit().then(init);
 
 async function initialiseGit() {
@@ -38,11 +47,8 @@ function getEnvOpts() {
     type: "list",
     name: "server",
     message: "Choose Server",
-    choices: [
-      { name: "Production", value: "prod" },
-      { name: "Staging", value: "staging" }
-    ],
-    default: 1
+    choices: configHelper.getEnvs(),
+    default: 0
   };
 }
 
@@ -61,10 +67,16 @@ function getApiServerOpts() {
     type: "list",
     name: "apiServer",
     message: "Choose API endpoint",
-    choices: ["staging", "production"]
+    choices: configHelper.getApiServers()
   };
 }
 
 function processAnswers(answers) {
-  log(chalk.red(answers.server));
+  const { server, branch, apiServer } = answers;
+
+  gitUtils
+    .checkoutBranch(branch) // checkout branch
+    .then(() => build({ apiServer })) // make build
+    .then(() => deploy({ server }))
+    .catch(ex => logger.error("Aborted..."));
 }

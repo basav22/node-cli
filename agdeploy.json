@@ -1,0 +1,32 @@
+{
+  "name": "agdeploy",
+  "description": "Agrostar UI deployment",
+  "config": {
+    "envs": [
+      {
+        "name": "Production",
+        "value": "prod",
+        "host": "agroex.agrostar.in"
+      },
+      {
+        "name": "Staging",
+        "value": "staging"
+        
+      }
+    ],
+    "apiServers": [
+      {
+        "name": "Production",
+        "value": "prod",
+        "commandKeyword": "prod"
+      },
+      {
+        "name": "Staging",
+        "value": "staging",
+        "commandKeyword": "staging"
+      }
+    ],
+    "localDeployDir": "dist",
+    "remoteDeployDir": "~/lmd-ui-v2/"
+  }
+}

@@ -2,15 +2,18 @@
  * Git Utility Functions go here
  */
 const bb = require("bluebird");
-
+const logger = require("./logger");
 const git = require("simple-git")();
 
 function checkoutBranch(branch) {
   const checkoutAsync = bb.promisify(git.checkout.bind(git, branch));
 
   return checkoutAsync()
-    .then(data => console.log("checkout Succeess."))
-    .catch(ex => console.error("failed to check out branch %s", ex));
+    .then(data => logger.info(" ----- checkout Succeess ------"))
+    .catch(ex => {
+      logger.error(`failed to check out branch - ${branch}`);
+      throw ex;
+    });
 }
 
 function getLocalBranches() {
@@ -22,7 +25,6 @@ async function init() {
   localBranches = await getLocalBranches();
   return localBranches;
 }
-
 
 module.exports = {
   checkoutBranch: checkoutBranch,
