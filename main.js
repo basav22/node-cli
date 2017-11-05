@@ -1,7 +1,7 @@
 const gitUtils = require("./gitutils");
 
 function init() {
-  gitUtils.checkoutBranch("master");
+  gitUtils.checkoutBranch("interactive");
 }
 
 init();

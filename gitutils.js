@@ -6,11 +6,11 @@ const bb = require("bluebird");
 const git = require("simple-git")();
 
 function checkoutBranch(branch) {
-  const exec = bb.promisify(git.checkout(branch).exec);
+  const checkoutAsync = bb.promisify(git.checkout.bind(git, branch));
 
-  return exec()
+  return checkoutAsync()
     .then(data => console.log("Succeess"))
-    .catch(ex => console.error("failed to check out branch %s", branch));
+    .catch(ex => console.error("failed to check out branch %s", ex));
 }
 
 module.exports = {
