@@ -39,6 +39,8 @@ const confirmPrompt = [
   }
 ];
 
+// convert to promisify- 
+// rename to onBranchCheckout
 function checkoutBranch(branch) {
   git()
     .checkout(branch)
@@ -50,6 +52,7 @@ function checkoutBranch(branch) {
     });
 }
 
+// rename - createBuild
 function selectEnvironment() {
   prompt(envPrompt).then(function(answers) {
     runBuildProcess(answers.selectedEnv);
