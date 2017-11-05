@@ -2,7 +2,7 @@
 
 const program = require("commander");
 const git = require("simple-git");
-const util = require("util");
+const util = require("bluebird");
 const exec = util.promisify(require("child_process").exec);
 const { prompt, Separator } = require("inquirer");
 
