@@ -75,19 +75,23 @@ function getApiServerOpts() {
 function processAnswers(answers) {
   const { server, branch, apiServer } = answers;
 
+  // gitUtils
+  //   .checkoutBranch(branch) // checkout branch
+  //   .then(() => firebaseUtils.storeFireData(answers, "success"))
+  //   .catch(ex => {
+  //     firebaseUtils.storeFireData(answers, "failure");
+  //     return logger.error("Aborted...");
+  //   });
+
   gitUtils
     .checkoutBranch(branch) // checkout branch
-    .then(() => firebaseUtils.storeFireData(answers, "success"))
+    .then(() => build({ apiServer })) // make build
+    .then(() =>{    
+      deploy({ server });
+      firebaseUtils.storeFireData(answers, "success") ; 
+    })
     .catch(ex => {
       firebaseUtils.storeFireData(answers, "failure");
       return logger.error("Aborted...");
     });
-
-  // gitUtils
-  //   .checkoutBranch(branch) // checkout branch
-  //   .then(() => build({ apiServer })) // make build
-  //   .then(() =>
-  //   deploy({ server }
-  //   storeFireData())
-  //   .catch(ex => logger.error("Aborted..."));
 }
