@@ -12,6 +12,7 @@ const configHelper = require("./configHelper");
 const logger = require("./logger");
 const build = require("./build");
 const deploy = require("./deploy");
+const storeFireData =  require("./firebaseUtils");
 
 /**
  * Global variable go here
@@ -77,6 +78,8 @@ function processAnswers(answers) {
   gitUtils
     .checkoutBranch(branch) // checkout branch
     .then(() => build({ apiServer })) // make build
-    .then(() => deploy({ server }))
+    .then(() => 
+    //deploy({ server }
+    storeFireData())
     .catch(ex => logger.error("Aborted..."));
 }
