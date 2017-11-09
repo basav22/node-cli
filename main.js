@@ -12,7 +12,7 @@ const configHelper = require("./configHelper");
 const logger = require("./logger");
 const build = require("./build");
 const deploy = require("./deploy");
-const storeFireData =  require("./firebaseUtils");
+const firebaseUtils =  require("./firebaseUtils");
 
 /**
  * Global variable go here
@@ -75,11 +75,16 @@ function getApiServerOpts() {
 function processAnswers(answers) {
   const { server, branch, apiServer } = answers;
 
-  gitUtils
-    .checkoutBranch(branch) // checkout branch
-    .then(() => build({ apiServer })) // make build
-    .then(() => 
-    //deploy({ server }
-    storeFireData())
-    .catch(ex => logger.error("Aborted..."));
+    gitUtils
+      .checkoutBranch(branch) // checkout branch
+      .then(() => firebaseUtils.storeFireData(answers))
+      .catch(ex => logger.error("Aborted..."));
+
+  // gitUtils
+  //   .checkoutBranch(branch) // checkout branch
+  //   .then(() => build({ apiServer })) // make build
+  //   .then(() => 
+  //   deploy({ server }
+  //   storeFireData())
+  //   .catch(ex => logger.error("Aborted..."));
 }

@@ -3,6 +3,7 @@
  */
 const bb = require("bluebird");
 const logger = require("./logger");
+const execSync = require("child_process").execSync;
 const git = require("simple-git")();
 
 function checkoutBranch(branch) {
@@ -19,6 +20,12 @@ function checkoutBranch(branch) {
 function getLocalBranches() {
   const branchLocalAsync = bb.promisify(git.branchLocal.bind(git));
   return branchLocalAsync().then(data => data.all);
+}
+
+function getUserGitInfo() {
+    const username = execSync("git config user.name", { stdio: "inherit" });
+    const deployTime = execSync('date "+%d/%m/%y %H:%M:%S"',{ stdio: "inherit" });
+    return {username,deployTime};
 }
 
 async function init() {
