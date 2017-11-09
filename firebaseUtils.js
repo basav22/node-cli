@@ -2,6 +2,7 @@
 
 const firebaseConfig = require("./firebaseConfig");
 const gitUtils = require("./gitutils");
+const logger = require("./logger");
 
 async function storeFireData(userInfo, status) {
   const { server, branch, apiServer } = userInfo;
@@ -26,9 +27,9 @@ function saveFirebaseData(key, value) {
     try {
       var usersRef = firebaseObj.database().ref(key);
       usersRef.push(value);
-      console.log("Data successfully saved to Firebase");
+      logger.info("Data successfully saved to Firebase");
     } catch (err) {
-      console.error(` ### could not save to Firebase `);
+      logger.error(` ### could not save to Firebase `);
       throw err;
     }
   });
