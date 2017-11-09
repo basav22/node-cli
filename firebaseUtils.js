@@ -1,27 +1,36 @@
+//@ts-check
+
 const firebaseConfig = require("./firebaseConfig");
 const gitUtils = require("./gitutils");
 
-async function storeFireData(userInfo) {
+async function storeFireData(userInfo, status) {
   const { server, branch, apiServer } = userInfo;
-  const { username, deployTime } = await gitUtils.getUserGitInfo();
+  const username = await gitUtils.getUserGitInfo();
+  const deployTime = new Date().toLocaleString();
+  const commitInfo = await gitUtils.getLatestCommit();
+  var userObj = {
+    user: username,
+    date: deployTime,
+    commit: commitInfo,
+    server: server,
+    branch: branch,
+    status: status,
+    apiServer: apiServer
+  };
+  saveFirebaseData("users", userObj);
+}
+
+function saveFirebaseData(key, value) {
   const fire = firebaseConfig.firebase();
-  fire.then(function(firebaseObj) {
-
-    var usersRef = firebaseObj.database().ref("users/");
-    usersRef.set({
-      [username]: {
-        user: username,
-        date: deployTime,
-        commit: "dummy commit",
-        server: server,
-        branch: branch,
-        status: "SUCCESS",
-        apiServer: apiServer
-      }
-    });
-
-    console.log("Deployement Info successfully saved")
-    return 0;
+  return fire.then(function(firebaseObj) {
+    try {
+      var usersRef = firebaseObj.database().ref(key);
+      usersRef.push(value);
+      console.log("Data successfully saved to Firebase");
+    } catch (err) {
+      console.error(` ### could not save to Firebase `);
+      throw err;
+    }
   });
 }
 
