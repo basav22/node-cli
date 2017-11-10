@@ -12,10 +12,15 @@ We need agdeploy.json file - where configuration reside. Look for the same in Re
 
 NOTE: Put the file in root directory.
 
+# How to run
+npm install -g node-cli
+
 
 Future - 
-1. Auto deploy on git push
-2. Push deploy logs(branch, apiserver, user, dateTime, deploystatus) to mongo
+- Put it on npm
+- Schedule deploymenent for PROD(e.g.)
+- Auto deploy on git push
+- Push deploy logs(branch, apiserver, user, dateTime, deploystatus) to mongo
 
 Have an idea /want to contribute, create a pull request. I will be happy to co-ordinate.
 

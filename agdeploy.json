@@ -10,8 +10,8 @@
       },
       {
         "name": "Staging",
-        "value": "staging"
-        
+        "value": "staging",
+        "host": "agroextest.agrostar.in"
       }
     ],
     "apiServers": [

@@ -18,7 +18,12 @@ function checkoutBranch(branch) {
 
 function getLocalBranches() {
   const branchLocalAsync = bb.promisify(git.branchLocal.bind(git));
-  return branchLocalAsync().then(data => data.all);
+  return branchLocalAsync()
+    .then(data => data.all)
+    .catch(ex => {
+      logger.error(`failed to get local branches..`);
+      throw ex;
+    });
 }
 
 async function init() {
