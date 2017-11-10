@@ -86,12 +86,14 @@ function processAnswers(answers) {
   gitUtils
     .checkoutBranch(branch) // checkout branch
     .then(() => build({ apiServer })) // make build
-    .then(() =>{    
+    .then(() => {
       deploy({ server });
-      firebaseUtils.storeFireData(answers, "success") ; 
+    })
+    .then(() => {
+      firebaseUtils.storeFireData(answers, true);
     })
     .catch(ex => {
-      firebaseUtils.storeFireData(answers, "failure");
+      firebaseUtils.storeFireData(answers, false);
       return logger.error("Aborted...");
     });
 }
