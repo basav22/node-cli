@@ -29,6 +29,7 @@ function saveFirebaseData(ref, value) {
     var usersRef = fire.database().ref(ref);
     usersRef.push(value);
     logger.info("Data successfully saved to Firebase");
+    fire.delete(); 
     return 0;
   } catch (err) {
     logger.error(` ### could not save to Firebase `);
