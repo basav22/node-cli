@@ -7,6 +7,10 @@ function getEnvs() {
   return agdeployJson.config.envs;
 }
 
+function getProjectName() {
+  return agdeployJson.name;
+}
+
 function getApiServers() {
   return agdeployJson.config.apiServers;
 }
@@ -53,5 +57,6 @@ module.exports = {
   getCmdKeyword,
   getHostName,
   getLocalDeployDir,
-  getRemoteDeployDir
+  getRemoteDeployDir,
+  getProjectName
 };

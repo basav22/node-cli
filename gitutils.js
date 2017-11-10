@@ -3,6 +3,7 @@
  */
 const bb = require("bluebird");
 const logger = require("./logger");
+const execSync = require("child_process").execSync;
 const git = require("simple-git")();
 
 function checkoutBranch(branch) {
@@ -21,6 +22,24 @@ function getLocalBranches() {
   return branchLocalAsync().then(data => data.all);
 }
 
+async function getUserGitInfo() {
+  const username = execSync("git config user.name").toString().replace(/\n/g, "");
+  return  username ;
+}
+
+function getLatestCommit() {
+  const gitLogs = bb.promisify(git.log.bind(git));
+  return gitLogs()
+    .then(data => {
+      logger.info(" ----- logs fetched Succeessfully ------");
+      return data["latest"];
+    })
+    .catch(ex => {
+      logger.error(`failed to fetch logs`);
+      throw ex;
+    });
+}
+
 async function init() {
   localBranches = await getLocalBranches();
   return localBranches;
@@ -28,5 +47,7 @@ async function init() {
 
 module.exports = {
   checkoutBranch: checkoutBranch,
-  getLocalBranches: init
+  getLocalBranches: init,
+  getUserGitInfo: getUserGitInfo,
+  getLatestCommit: getLatestCommit
 };
