@@ -1,15 +1,13 @@
 const firebase = require("firebase");
 
 var config = {
-  apiKey: "AIzaSyAR0XL0EGtl8V0mreihVPnDfDyx1Iut5w0",
-  authDomain: "node-cli-agdeply.firebaseapp.com",
-  databaseURL: "https://node-cli-agdeply.firebaseio.com",
-  projectId: "node-cli-agdeply",
-  storageBucket: "node-cli-agdeply.appspot.com",
-  messagingSenderId: "146117748769"
+  apiKey: "AIzaSyAzhM_QXTygDNgil5hIkABK18AhBCvwXi8",
+  authDomain: "deploy-cli.firebaseapp.com",
+  databaseURL: "https://deploy-cli.firebaseio.com",
+  projectId: "deploy-cli",
+  storageBucket: "deploy-cli.appspot.com",
+  messagingSenderId: "1091582103199"
 };
 var fire = firebase.initializeApp(config);
 
 module.exports = fire;
-
-

@@ -5,7 +5,7 @@ const program = require("commander");
 const { prompt, Separator } = require("inquirer");
 const chalk = require("chalk");
 const gitUtils = require("./gitutils");
-
+// const fire = require("./firebaseConfig");
 // const agdeployJson = require("./agdeploy.json");
 const configHelper = require("./configHelper");
 
@@ -83,17 +83,16 @@ function processAnswers(answers) {
   //     return logger.error("Aborted...");
   //   });
 
+  // firebaseUtils.storeFireData(answers, { success: true });
+  
+
   gitUtils
     .checkoutBranch(branch) // checkout branch
     .then(() => build({ apiServer })) // make build
-    .then(() => {
-      deploy({ server });
-    })
-    .then(() => {
-      firebaseUtils.storeFireData(answers, true);
-    })
+    .then(() => deploy({ server }))  // delpoy
+    .then(() => firebaseUtils.storeFireData(answers, {success: true})) // save to firebase
     .catch(ex => {
-      firebaseUtils.storeFireData(answers, false);
+      firebaseUtils.storeFireData(answers, {success: false});
       return logger.error("Aborted...");
     });
 }

@@ -29,14 +29,13 @@ function getLocalBranches() {
 
 async function getUserGitInfo() {
   const username = execSync("git config user.name").toString().replace(/\n/g, "");
-  return  username ;
+  return  username;
 }
 
 function getLatestCommit() {
   const gitLogs = bb.promisify(git.log.bind(git));
   return gitLogs()
     .then(data => {
-      logger.info(" ----- logs fetched Succeessfully ------");
       return data["latest"];
     })
     .catch(ex => {

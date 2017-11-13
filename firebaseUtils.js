@@ -5,38 +5,42 @@ const gitUtils = require("./gitutils");
 const configHelper = require("./configHelper");
 const logger = require("./logger");
 
-async function storeFireData(userInfo, status) {
-  const { server, branch, apiServer } = userInfo;
-  const username = await gitUtils.getUserGitInfo();
-  const deployTime = new Date().toLocaleString();
-  const commitInfo = await gitUtils.getLatestCommit();
+/**
+ * Prepare JSON to store in DB.
+ * @param {object} answers 
+ * @param {object} params 
+ */
+async function storeFireData(answers, params) {
+  const { server, branch, apiServer } = answers;
+
+  const user = await gitUtils.getUserGitInfo();
+  const date = new Date().toLocaleString();
+  const lastCommit = await gitUtils.getLatestCommit();
   const project = configHelper.getProjectName();
 
-  saveFirebaseData(project, {
-    user: username,
-    date: deployTime,
-    commit: commitInfo,
-    server: server,
-    branch: branch,
-    sucess: status,
-    apiServer: apiServer,
-    project: project
-  });
+  saveToDB(project, Object.assign({},{
+    user,
+    date,
+    lastCommit,
+    server,
+    branch,
+    apiServer,
+    
+  }, params))
 }
 
-function saveFirebaseData(ref, value) {
-  try {
-    var usersRef = fire.database().ref(ref);
-    usersRef.push(value);
-    logger.info("Data successfully saved to Firebase");
-    fire.delete(); 
-    return 0;
-  } catch (err) {
-    logger.error(` ### could not save to Firebase `);
-    throw err;
-  }
+function saveToDB(ref, data) {
+  return fire
+    .database()
+    .ref(ref)
+    .push(data)
+    .then(() => {
+      logger.info("Data successfully saved to Firebase");
+      fire.delete();
+    })
+    .catch(() => logger.error(` ### could not save to Firebase `));
 }
 
 module.exports = {
-  storeFireData: storeFireData
+  storeFireData: storeFireData,
 };
